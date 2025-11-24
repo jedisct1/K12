@@ -58,8 +58,9 @@ http://creativecommons.org/publicdomain/zero/1.0/
     </fragment>
 
     <fragment name="ARMv8Asha3" inherits="optimized">
-        <c gcc="-march=armv8.4-a+sha3">lib/ARMv8Asha3/KeccakP-1600-opt64.c</c>
+        <c>lib/Optimized64/KeccakP-1600-opt64.c</c>
         <s gcc="-march=armv8.4-a+sha3">lib/ARMv8Asha3/KeccakP-1600-ARMv8Asha3.S</s>
+        <c>lib/ARMv8Asha3/KeccakP-1600-runtimeDispatch.c</c>
         <h>lib/ARMv8Asha3/KeccakP-1600-SnP.h</h>
     </fragment>
 

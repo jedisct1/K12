@@ -170,12 +170,15 @@ int KangarooTwelve_Squeeze(KangarooTwelve_Instance *ktInstance, unsigned char *o
 int KangarooTwelve_DisableAVX512(void);
 int KangarooTwelve_DisableAVX2(void);
 int KangarooTwelve_DisableSSSE3(void);
+int KangarooTwelve_DisableNeon(void);
+int KangarooTwelve_DisableArmSha3(void);
 
 /**
   * Function to reset all CPU features to enabled-if-available. Calling this
   * always has no effect if no CPU features have been explicitly disabled.
   */
 void KangarooTwelve_EnableAllCpuFeatures(void);
+void KangarooTwelve_EnableAllArmCpuFeatures(void);
 #endif  // !KeccakP1600_disableParallelism && KeccakP1600_enable_simd_options
 
 #endif
