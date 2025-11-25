@@ -285,12 +285,7 @@ int KangarooTwelve_Update(KangarooTwelve_Instance *ktInstance, const unsigned ch
                                         ktInstance->thread_count,
                                         input, full_chunks, chaining_values, ktInstance->securityLevel) == 0) {
                 /* Successfully processed chunks in parallel */
-                /* Absorb all chaining values into finalNode in order */
-                for (size_t i = 0; i < full_chunks; i++) {
-                    TurboSHAKE_Absorb(&ktInstance->finalNode,
-                                     chaining_values + (i * capacityInBytes),
-                                     capacityInBytes);
-                }
+                TurboSHAKE_Absorb(&ktInstance->finalNode, chaining_values, full_chunks * capacityInBytes);
                 ktInstance->blockNumber += full_chunks;
 
                 /* Update input pointer and length */
