@@ -22,6 +22,7 @@ Please refer to the XKCP for more details.
 #include <stdlib.h>
 #include <string.h>
 #include "brg_endian.h"
+#include "KT-atomic.h"
 #include "KeccakP-1600-SnP.h"
 
 #ifdef KeccakP1600_disableParallelism
@@ -31,13 +32,13 @@ Please refer to the XKCP for more details.
 // Forward declaration
 void KangarooTwelve_SetProcessorCapabilities();
 #ifdef KeccakP1600_enable_simd_options
-int K12_SSSE3_requested_disabled = 0;
-int K12_AVX2_requested_disabled = 0;
-int K12_AVX512_requested_disabled = 0;
+K12_ATOMIC(int) K12_SSSE3_requested_disabled = 0;
+K12_ATOMIC(int) K12_AVX2_requested_disabled = 0;
+K12_ATOMIC(int) K12_AVX512_requested_disabled = 0;
 #endif  // KeccakP1600_enable_simd_options
-int K12_enableSSSE3 = 0;
-int K12_enableAVX2 = 0;
-int K12_enableAVX512 = 0;
+K12_ATOMIC(int) K12_enableSSSE3 = 0;
+K12_ATOMIC(int) K12_enableAVX2 = 0;
+K12_ATOMIC(int) K12_enableAVX512 = 0;
 
 /* ---------------------------------------------------------------- */
 
@@ -327,7 +328,7 @@ enum cpu_feature {
   UNDEFINED = 1 << 30
 };
 
-static enum cpu_feature g_cpu_features = UNDEFINED;
+static K12_ATOMIC(int) g_cpu_features = UNDEFINED;
 
 static enum cpu_feature
     get_cpu_features(void) {

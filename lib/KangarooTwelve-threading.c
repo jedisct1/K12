@@ -340,6 +340,8 @@ int KT_ProcessChunksThreaded(const KT_ThreadPool_API* threadpool_api,
         /* Submit batch to thread pool */
         if (threadpool_api->submit(threadpool_handle, process_chunk_range,
                                    &work_items[i]) != 0) {
+            if (i > 0)
+                threadpool_api->wait_all(threadpool_handle);
             free(work_items);
             return 1;
         }

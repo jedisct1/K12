@@ -23,6 +23,7 @@ ARM CPU feature detection adapted from libaegis by Frank Denis.
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include "KT-atomic.h"
 #include "KeccakP-1600-SnP.h"
 
 #ifdef KeccakP1600_disableParallelism
@@ -33,12 +34,12 @@ ARM CPU feature detection adapted from libaegis by Frank Denis.
 void KangarooTwelve_SetArmProcessorCapabilities();
 
 #ifdef KeccakP1600_enable_simd_options
-int K12_NEON_requested_disabled = 0;
-int K12_ARM_SHA3_requested_disabled = 0;
+K12_ATOMIC(int) K12_NEON_requested_disabled = 0;
+K12_ATOMIC(int) K12_ARM_SHA3_requested_disabled = 0;
 #endif  // KeccakP1600_enable_simd_options
 
-int K12_enableNEON = 0;
-int K12_enableARM_SHA3 = 0;
+K12_ATOMIC(int) K12_enableNEON = 0;
+K12_ATOMIC(int) K12_enableARM_SHA3 = 0;
 
 /* ---------------------------------------------------------------- */
 /* Platform-specific includes for CPU feature detection */
@@ -95,7 +96,7 @@ enum arm_cpu_feature {
     ARM_UNDEFINED = 1 << 30
 };
 
-static enum arm_cpu_feature g_arm_cpu_features = ARM_UNDEFINED;
+static K12_ATOMIC(int) g_arm_cpu_features = ARM_UNDEFINED;
 
 #if defined(K12_HAVE_LINUX_ARM) && defined(K12_HAVE_GETAUXVAL)
 static int _have_hwcap(unsigned long hwcap_bit) {
