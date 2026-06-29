@@ -76,8 +76,6 @@ typedef struct KT_ThreadPool_API {
      *
      * @param pool  Opaque pool handle from create()
      * @note This may be called multiple times to wait for different batches
-     * @note Do not call this concurrently with submit(), wait_all(), or destroy()
-     *       on the same pool handle.
      */
     void (*wait_all)(void* pool);
 
