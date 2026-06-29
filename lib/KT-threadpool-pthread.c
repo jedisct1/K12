@@ -91,7 +91,7 @@ static void* worker_thread(void* arg)
             pthread_mutex_lock(&pool->mutex);
             pool->jobs_finished++;
             if (pool->jobs_finished >= pool->job_count) {
-                pthread_cond_broadcast(&pool->work_complete);
+                pthread_cond_signal(&pool->work_complete);
             }
             pthread_mutex_unlock(&pool->mutex);
         }
@@ -213,27 +213,22 @@ static void pthread_wait_all(void* pool_handle)
 
     pthread_mutex_lock(&pool->mutex);
 
-    if (!pool->batch_ready) {
-        /* Start this batch and wake up workers */
-        pool->jobs_grabbed = 0;
-        pool->jobs_finished = 0;
+    pool->jobs_grabbed = 0;
+    pool->jobs_finished = 0;
+
+    if (pool->job_count > 0) {
         pool->batch_ready = 1;
         pthread_cond_broadcast(&pool->work_available);
+
+        while (pool->jobs_finished < pool->job_count) {
+            pthread_cond_wait(&pool->work_complete, &pool->mutex);
+        }
     }
 
-    /* Wait for all jobs in the active batch to finish execution */
-    while (pool->batch_ready && pool->jobs_finished < pool->job_count) {
-        pthread_cond_wait(&pool->work_complete, &pool->mutex);
-    }
-
-    if (pool->batch_ready) {
-        /* Reset for next batch */
-        pool->job_count = 0;
-        pool->jobs_grabbed = 0;
-        pool->jobs_finished = 0;
-        pool->batch_ready = 0;
-        pthread_cond_broadcast(&pool->work_complete);
-    }
+    pool->job_count = 0;
+    pool->jobs_grabbed = 0;
+    pool->jobs_finished = 0;
+    pool->batch_ready = 0;
 
     pthread_mutex_unlock(&pool->mutex);
 }
